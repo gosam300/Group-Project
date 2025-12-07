@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Agent Record Management System</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #4a6491 100%);
+            color: white;
+            padding: 25px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
+
+        .tabs {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .tab-headers {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .tab-header {
+            padding: 16px 30px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #495057;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-header:hover {
+            background: #e9ecef;
+        }
+
+        .tab-header.active {
+            color: #007bff;
+            background: white;
+            border-bottom: 3px solid #007bff;
+        }
+
+        .tab-content {
+            padding: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-message {
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .search-results {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .record-details {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #e9ecef;
+        }
+
+        .record-details h4 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .close-btn {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .close-btn:hover {
+            color: #343a40;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .tab-header {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+
+            .tab-content {
+                padding: 15px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Travel Agent Record Management System</h1>
+        </header>
+
+        <div class="container">
+            <div class="tabs">
+                <div class="tab-headers">
+                    <div
+                        class="tab-header"
+                        :class="{ active: activeTab === 'clients' }"
+                        @click="activeTab = 'clients'"
+                    >
+                        Clients
+                    </div>
+                    <div
+                        class="tab-header"
+                        :class="{ active: activeTab === 'airlines' }"
+                        @click="activeTab = 'airlines'"
+                    >
+                        Airlines
+                    </div>
+                    <div
+                        class="tab-header"
+                        :class="{ active: activeTab === 'flights' }"
+                        @click="activeTab = 'flights'"
+                    >
+                        Flights
+                    </div>
+                    <div
+                        class="tab-header"
+                        :class="{ active: activeTab === 'search' }"
+                        @click="activeTab = 'search'"
+                    >
+                        Search
+                    </div>
+                </div>
+
+                <!-- Clients Tab -->
+                <div v-if="activeTab === 'clients'" class="tab-content">
+                    <!-- Client Form -->
+                    <div class="card">
+                        <h3>{{ editingClient ? 'Edit Client' : 'Add New Client' }}</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Name *</label>
+                                <input v-model="clientForm.Name" placeholder="Full Name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number *</label>
+                                <input v-model="clientForm['Phone Number']" placeholder="Phone Number" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Address Line 1 *</label>
+                            <input v-model="clientForm['Address Line 1']" placeholder="Street Address" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Address Line 2</label>
+                                <input v-model="clientForm['Address Line 2']" placeholder="Apartment, Suite, etc.">
+                            </div>
+                            <div class="form-group">
+                                <label>Address Line 3</label>
+                                <input v-model="clientForm['Address Line 3']" placeholder="Additional Address">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>City *</label>
+                                <input v-model="clientForm.City" placeholder="City" required>
+                            </div>
+                            <div class="form-group">
+                                <label>State *</label>
+                                <input v-model="clientForm.State" placeholder="State/Province" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Zip Code *</label>
+                                <input v-model="clientForm['Zip Code']" placeholder="Postal Code" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Country *</label>
+                                <input v-model="clientForm.Country" placeholder="Country" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button
+                                class="btn btn-primary"
+                                @click="editingClient ? updateClient() : createClient()"
+                                :disabled="!clientForm.Name || !clientForm['Phone Number']"
+                            >
+                                {{ editingClient ? 'Update Client' : 'Add Client' }}
+                            </button>
+                            <button
+                                v-if="editingClient"
+                                class="btn btn-secondary"
+                                @click="cancelEdit('client')"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Clients List -->
+                    <div class="card">
+                        <h3>All Clients</h3>
+                        <div v-if="loading.clients" class="spinner"></div>
+                        <div v-else-if="clients.length === 0" class="no-results">
+                            No clients found. Add your first client above.
+                        </div>
+                        <div v-else class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Phone</th>
+                                        <th>City</th>
+                                        <th>Country</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="client in clients" :key="client.ID">
+                                        <td>{{ client.ID }}</td>
+                                        <td>{{ client.Name }}</td>
+                                        <td>{{ client['Phone Number'] }}</td>
+                                        <td>{{ client.City }}</td>
+                                        <td>{{ client.Country }}</td>
+                                        <td>
+                                            <button class="btn btn-primary" @click="editClient(client)">Edit</button>
+                                            <button class="btn btn-danger" @click="deleteRecord('clients', client.ID)">Delete</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Airlines Tab -->
+                <div v-if="activeTab === 'airlines'" class="tab-content">
+                    <!-- Airline Form -->
+                    <div class="card">
+                        <h3>{{ editingAirline ? 'Edit Airline' : 'Add New Airline' }}</h3>
+                        <div class="form-group">
+                            <label>Company Name *</label>
+                            <input v-model="airlineForm['Company Name']" placeholder="Airline Company Name" required>
+                        </div>
+                        <div class="form-group">
+                            <button
+                                class="btn btn-primary"
+                                @click="editingAirline ? updateAirline() : createAirline()"
+                                :disabled="!airlineForm['Company Name']"
+                            >
+                                {{ editingAirline ? 'Update Airline' : 'Add Airline' }}
+                            </button>
+                            <button
+                                v-if="editingAirline"
+                                class="btn btn-secondary"
+                                @click="cancelEdit('airline')"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Airlines List -->
+                    <div class="card">
+                        <h3>All Airlines</h3>
+                        <div v-if="loading.airlines" class="spinner"></div>
+                        <div v-else-if="airlines.length === 0" class="no-results">
+                            No airlines found. Add your first airline above.
+                        </div>
+                        <div v-else class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Company Name</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="airline in airlines" :key="airline.ID">
+                                        <td>{{ airline.ID }}</td>
+                                        <td>{{ airline['Company Name'] }}</td>
+                                        <td>
+                                            <button class="btn btn-primary" @click="editAirline(airline)">Edit</button>
+                                            <button class="btn btn-danger" @click="deleteRecord('airlines', airline.ID)">Delete</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flights Tab -->
+                <div v-if="activeTab === 'flights'" class="tab-content">
+                    <!-- Flight Form -->
+                    <div class="card">
+                        <h3>{{ editingFlight ? 'Edit Flight' : 'Add New Flight' }}</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Client *</label>
+                                <select v-model="flightForm.Client_ID" required>
+                                    <option value="">Select Client</option>
+                                    <option v-for="client in clients" :key="client.ID" :value="client.ID">
+                                        {{ client.Name }} (ID: {{ client.ID }})
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Airline *</label>
+                                <select v-model="flightForm.Airline_ID" required>
+                                    <option value="">Select Airline</option>
+                                    <option v-for="airline in airlines" :key="airline.ID" :value="airline.ID">
+                                        {{ airline['Company Name'] }} (ID: {{ airline.ID }})
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date *</label>
+                                <input v-model="flightForm.Date" type="datetime-local" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Start City *</label>
+                                <input v-model="flightForm['Start City']" placeholder="Departure City" required>
+                            </div>
+                            <div class="form-group">
+                                <label>End City *</label>
+                                <input v-model="flightForm['End City']" placeholder="Arrival City" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button
+                                class="btn btn-primary"
+                                @click="editingFlight ? updateFlight() : createFlight()"
+                                :disabled="!flightForm.Client_ID || !flightForm.Airline_ID || !flightForm.Date || !flightForm['Start City'] || !flightForm['End City']"
+                            >
+                                {{ editingFlight ? 'Update Flight' : 'Add Flight' }}
+                            </button>
+                            <button
+                                v-if="editingFlight"
+                                class="btn btn-secondary"
+                                @click="cancelEdit('flight')"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Flights List -->
+                    <div class="card">
+                        <h3>All Flights</h3>
+                        <div v-if="loading.flights" class="spinner"></div>
+                        <div v-else-if="flights.length === 0" class="no-results">
+                            No flights found. Add your first flight above.
+                        </div>
+                        <div v-else class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Client</th>
+                                        <th>Airline</th>
+                                        <th>Date</th>
+                                        <th>From → To</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="flight in flights" :key="flight.ID">
+                                        <td>{{ flight.ID }}</td>
+                                        <td>{{ getClientName(flight.Client_ID) }}</td>
+                                        <td>{{ getAirlineName(flight.Airline_ID) }}</td>
+                                        <td>{{ formatDate(flight.Date) }}</td>
+                                        <td>{{ flight['Start City'] }} → {{ flight['End City'] }}</td>
+                                        <td>
+                                            <button class="btn btn-primary" @click="editFlight(flight)">Edit</button>
+                                            <button class="btn btn-danger" @click="deleteRecord('flights', flight.ID)">Delete</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Tab -->
+                <div v-if="activeTab === 'search'" class="tab-content">
+                    <!-- Search Form -->
+                    <div class="card">
+                        <h3>Search Records</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Record Type</label>
+                                <select v-model="searchForm.type">
+                                    <option value="all">All Records</option>
+                                    <option value="clients">Clients</option>
+                                    <option value="airlines">Airlines</option>
+                                    <option value="flights">Flights</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Search Field</label>
+                                <select v-model="searchForm.field" :disabled="searchForm.type === 'all'">
+                                    <option value="all">All Fields</option>
+                                    <option v-for="field in getSearchFields()" :key="field" :value="field">
+                                        {{ formatFieldName(field) }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Search Term</label>
+                                <input v-model="searchForm.term" placeholder="Enter search term..." @keyup.enter="doSearch">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary" @click="doSearch">Search</button>
+                            <button class="btn btn-secondary" @click="clearSearch">Clear</button>
+                        </div>
+                    </div>
+
+                    <!-- Search Results -->
+                    <div v-if="searchResults && searchResults.length > 0" class="search-results">
+                        <h3>Search Results ({{ searchResults.length }} found)</h3>
+                        <div v-for="result in searchResults" :key="result.Type + '-' + result.ID" class="record-details">
+                            <h4>{{ formatType(result.Type) }} #{{ result.ID }}</h4>
+                            <div v-for="(value, key) in result" :key="key" v-if="value !== null && key !== 'Type'">
+                                <strong>{{ formatFieldName(key) }}:</strong> {{ value }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-else-if="searchResults !== null && searchResults.length === 0" class="no-results">
+                        No records found matching your search criteria.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Messages -->
+            <div v-if="statusMessage" :class="['status-message', statusType]">
+                <span>{{ statusMessage }}</span>
+                <button @click="clearStatus" style="background:none;border:none;cursor:pointer;">×</button>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div v-if="showDeleteModal" class="modal-overlay">
+            <div class="modal">
+                <button class="close-btn" @click="showDeleteModal = false">×</button>
+                <h3>Confirm Delete</h3>
+                <p>Are you sure you want to delete this {{ deleteRecordType }}?</p>
+                <p><strong>This action cannot be undone.</strong></p>
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-danger" @click="confirmDelete">Delete</button>
+                    <button class="btn btn-secondary" @click="showDeleteModal = false">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, reactive, computed, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                // State
+                const activeTab = ref('clients');
+                const clients = ref([]);
+                const airlines = ref([]);
+                const flights = ref([]);
+                const searchResults = ref(null);
+                const loading = reactive({
+                    clients: true,
+                    airlines: true,
+                    flights: true
+                });
+                const showDeleteModal = ref(false);
+                const deleteRecordType = ref('');
+                const deleteRecordId = ref(null);
+                const statusMessage = ref('');
+                const statusType = ref('');
+
+                // Editing flags
+                const editingClient = ref(false);
+                const editingAirline = ref(false);
+                const editingFlight = ref(false);
+
+                // Form data
+                const clientForm = reactive({
+                    Name: '',
+                    'Phone Number': '',
+                    'Address Line 1': '',
+                    'Address Line 2': '',
+                    'Address Line 3': '',
+                    City: '',
+                    State: '',
+                    'Zip Code': '',
+                    Country: ''
+                });
+
+                const airlineForm = reactive({
+                    'Company Name': ''
+                });
+
+                const flightForm = reactive({
+                    Client_ID: '',
+                    Airline_ID: '',
+                    Date: '',
+                    'Start City': '',
+                    'End City': ''
+                });
+
+                const searchForm = reactive({
+                    type: 'all',
+                    field: 'all',
+                    term: ''
+                });
+
+                // API Base URL
+                const API_BASE = 'http://localhost:5000/api';
+
+                // Helper Functions
+                function formatDate(dateString) {
+                    if (!dateString) return '';
+                    const date = new Date(dateString);
+                    return date.toLocaleString();
+                }
+
+                function formatFieldName(field) {
+                    return field.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ');
+                }
+
+                function formatType(type) {
+                    const types = {
+                        'client': 'Client',
+                        'airline': 'Airline',
+                        'flight': 'Flight'
+                    };
+                    return types[type] || type;
+                }
+
+                function getSearchFields() {
+                    const fields = {
+                        clients: ['Name', 'Phone Number', 'City', 'Country', 'State'],
+                        airlines: ['Company Name'],
+                        flights: ['Start City', 'End City']
+                    };
+                    return fields[searchForm.type] || [];
+                }
+
+                function getClientName(clientId) {
+                    const client = clients.value.find(c => c.ID === clientId);
+                    return client ? client.Name : `Client #${clientId}`;
+                }
+
+                function getAirlineName(airlineId) {
+                    const airline = airlines.value.find(a => a.ID === airlineId);
+                    return airline ? airline['Company Name'] : `Airline #${airlineId}`;
+                }
+
+                function showStatus(message, type = 'status-success') {
+                    statusMessage.value = message;
+                    statusType.value = type;
+                    setTimeout(() => {
+                        clearStatus();
+                    }, 5000);
+                }
+
+                function clearStatus() {
+                    statusMessage.value = '';
+                    statusType.value = '';
+                }
+
+                // API Functions
+                async function fetchAll() {
+                    try {
+                        loading.clients = true;
+                        loading.airlines = true;
+                        loading.flights = true;
+
+                        const [clientsRes, airlinesRes, flightsRes] = await Promise.all([
+                            fetch(`${API_BASE}/clients`).then(r => r.json()),
+                            fetch(`${API_BASE}/airlines`).then(r => r.json()),
+                            fetch(`${API_BASE}/flights`).then(r => r.json())
+                        ]);
+
+                        clients.value = clientsRes;
+                        airlines.value = airlinesRes;
+                        flights.value = flightsRes;
+
+                        showStatus('Data loaded successfully');
+                    } catch (error) {
+                        console.error('Error loading data:', error);
+                        showStatus('Failed to load data', 'status-error');
+                    } finally {
+                        loading.clients = false;
+                        loading.airlines = false;
+                        loading.flights = false;
+                    }
+                }
+
+                // Client CRUD
+                async function createClient() {
+                    try {
+                        const response = await fetch(`${API_BASE}/clients`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(clientForm)
+                        });
+
+                        if (!response.ok) throw new Error('Failed to create client');
+
+                        resetForm('client');
+                        await fetchAll();
+                        showStatus('Client created successfully');
+                    } catch (error) {
+                        console.error('Error creating client:', error);
+                        showStatus('Failed to create client', 'status-error');
+                    }
+                }
+
+                function editClient(client) {
+                    editingClient.value = true;
+                    Object.assign(clientForm, client);
+                    // Scroll to top of form
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+
+                async function updateClient() {
+                    try {
+                        const response = await fetch(`${API_BASE}/clients/${clientForm.ID}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(clientForm)
+                        });
+
+                        if (!response.ok) throw new Error('Failed to update client');
+
+                        resetForm('client');
+                        await fetchAll();
+                        showStatus('Client updated successfully');
+                    } catch (error) {
+                        console.error('Error updating client:', error);
+                        showStatus('Failed to update client', 'status-error');
+                    }
+                }
+
+                // Airline CRUD
+                async function createAirline() {
+                    try {
+                        const response = await fetch(`${API_BASE}/airlines`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(airlineForm)
+                        });
+
+                        if (!response.ok) throw new Error('Failed to create airline');
+
+                        resetForm('airline');
+                        await fetchAll();
+                        showStatus('Airline created successfully');
+                    } catch (error) {
+                        console.error('Error creating airline:', error);
+                        showStatus('Failed to create airline', 'status-error');
+                    }
+                }
+
+                function editAirline(airline) {
+                    editingAirline.value = true;
+                    Object.assign(airlineForm, airline);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+
+                async function updateAirline() {
+                    try {
+                        const response = await fetch(`${API_BASE}/airlines/${airlineForm.ID}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(airlineForm)
+                        });
+
+                        if (!response.ok) throw new Error('Failed to update airline');
+
+                        resetForm('airline');
+                        await fetchAll();
+                        showStatus('Airline updated successfully');
+                    } catch (error) {
+                        console.error('Error updating airline:', error);
+                        showStatus('Failed to update airline', 'status-error');
+                    }
+                }
+
+                // Flight CRUD
+                async function createFlight() {
+                    try {
+                        const response = await fetch(`${API_BASE}/flights`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(flightForm)
+                        });
+
+                        if (!response.ok) throw new Error('Failed to create flight');
+
+                        resetForm('flight');
+                        await fetchAll();
+                        showStatus('Flight created successfully');
+                    } catch (error) {
+                        console.error('Error creating flight:', error);
+                        showStatus('Failed to create flight', 'status-error');
+                    }
+                }
+
+                function editFlight(flight) {
+                    editingFlight.value = true;
+                    // Convert date to local datetime format
+                    const flightDate = new Date(flight.Date);
+                    const localDate = flightDate.toISOString().slice(0, 16);
+
+                    Object.assign(flightForm, {
+                        ...flight,
+                        Date: localDate
+                    });
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+
+                async function updateFlight() {
+                    try {
+                        const response = await fetch(`${API_BASE}/flights/${flightForm.ID}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(flightForm)
+                        });
+
+                        if (!response.ok) throw new Error('Failed to update flight');
+
+                        resetForm('flight');
+                        await fetchAll();
+                        showStatus('Flight updated successfully');
+                    } catch (error) {
+                        console.error('Error updating flight:', error);
+                        showStatus('Failed to update flight', 'status-error');
+                    }
+                }
+
+                // Delete Record
+                function deleteRecord(type, id) {
+                    deleteRecordType.value = type;
+                    deleteRecordId.value = id;
+                    showDeleteModal.value = true;
+                }
+
+                async function confirmDelete() {
+                    try {
+                        const endpoint = deleteRecordType.value === 'clients' ? 'clients' :
+                                        deleteRecordType.value === 'airlines' ? 'airlines' : 'flights';
+
+                        const response = await fetch(`${API_BASE}/${endpoint}/${deleteRecordId.value}`, {
+                            method: 'DELETE'
+                        });
+
+                        if (!response.ok) throw new Error('Failed to delete record');
+
+                        await fetchAll();
+                        showDeleteModal.value = false;
+                        showStatus(`${formatType(deleteRecordType.value)} deleted successfully`);
+                    } catch (error) {
+                        console.error('Error deleting record:', error);
+                        showStatus('Failed to delete record', 'status-error');
+                    }
+                }
+
+                // Search
+                async function doSearch() {
+                    if (!searchForm.term.trim()) {
+                        searchResults.value = null;
+                        showStatus('Please enter a search term', 'status-warning');
+                        return;
+                    }
+
+                    try {
+                        let results = [];
+
+                        if (searchForm.type === 'all') {
+                            // Search all record types
+                            const [clientsRes, airlinesRes, flightsRes] = await Promise.all([
+                                fetch(`${API_BASE}/search?type=client&field=${searchForm.field}&value=${searchForm.term}`).then(r => r.json()),
+                                fetch(`${API_BASE}/search?type=airline&field=${searchForm.field}&value=${searchForm.term}`).then(r => r.json()),
+                                fetch(`${API_BASE}/search?type=flight&field=${searchForm.field}&value=${searchForm.term}`).then(r => r.json())
+                            ]);
+
+                            results = [
+                                ...clientsRes.map(r => ({ ...r, Type: 'client' })),
+                                ...airlinesRes.map(r => ({ ...r, Type: 'airline' })),
+                                ...flightsRes.map(r => ({ ...r, Type: 'flight' }))
+                            ];
+                        } else {
+                            // Search specific type
+                            const response = await fetch(
+                                `${API_BASE}/search?type=${searchForm.type}&field=${searchForm.field}&value=${searchForm.term}`
+                            );
+                            results = await response.json();
+                        }
+
+                        searchResults.value = results;
+                        showStatus(`Found ${results.length} records matching "${searchForm.term}"`);
+                    } catch (error) {
+                        console.error('Search error:', error);
+                        showStatus('Search failed', 'status-error');
+                    }
+                }
+
+                function clearSearch() {
+                    searchForm.type = 'all';
+                    searchForm.field = 'all';
+                    searchForm.term = '';
+                    searchResults.value = null;
+                }
+
+                // Form Helpers
+                function resetForm(type) {
+                    switch(type) {
+                        case 'client':
+                            Object.keys(clientForm).forEach(key => {
+                                clientForm[key] = '';
+                            });
+                            editingClient.value = false;
+                            break;
+                        case 'airline':
+                            Object.keys(airlineForm).forEach(key => {
+                                airlineForm[key] = '';
+                            });
+                            editingAirline.value = false;
+                            break;
+                        case 'flight':
+                            Object.keys(flightForm).forEach(key => {
+                                flightForm[key] = '';
+                            });
+                            editingFlight.value = false;
+                            break;
+                    }
+                }
+
+                function cancelEdit(type) {
+                    resetForm(type);
+                    showStatus('Edit cancelled');
+                }
+
+                // Lifecycle
+                onMounted(() => {
+                    fetchAll();
+                });
+
+                return {
+                    // State
+                    activeTab,
+                    clients,
+                    airlines,
+                    flights,
+                    searchResults,
+                    loading,
+                    showDeleteModal,
+                    deleteRecordType,
+                    deleteRecordId,
+                    statusMessage,
+                    statusType,
+
+                    // Editing flags
+                    editingClient,
+                    editingAirline,
+                    editingFlight,
+
+                    // Form data
+                    clientForm,
+                    airlineForm,
+                    flightForm,
+                    searchForm,
+
+                    // Helper functions
+                    formatDate,
+                    formatFieldName,
+                    formatType,
+                    getSearchFields,
+                    getClientName,
+                    getAirlineName,
+                    showStatus,
+                    clearStatus,
+
+                    // CRUD operations
+                    createClient,
+                    editClient,
+                    updateClient,
+                    createAirline,
+                    editAirline,
+                    updateAirline,
+                    createFlight,
+                    editFlight,
+                    updateFlight,
+                    deleteRecord,
+                    confirmDelete,
+
+                    // Search
+                    doSearch,
+                    clearSearch,
+
+                    // Form helpers
+                    cancelEdit
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
