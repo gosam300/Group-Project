@@ -337,7 +337,7 @@ createApp({
                     const response = await fetch(
                         `${API_BASE}/search?type=${searchForm.type}&field=${searchForm.field}&value=${searchForm.term}`
                     );
-                    results = await response.json();
+                    results = await response.json().then(res => res.results);
                 }
 
                 searchResults.value = results;

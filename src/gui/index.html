@@ -364,10 +364,10 @@
                 </div>
             </div>
 
-            <!-- Status Messages -->
-            <div v-if="statusMessage" :class="['status-message', statusType]">
+            <!-- Toast Notifications -->
+            <div v-if="statusMessage" :class="['toast', statusType]">
                 <span>{{ statusMessage }}</span>
-                <button @click="clearStatus" style="background:none;border:none;cursor:pointer;">×</button>
+                <button @click="clearStatus" class="toast-close">×</button>
             </div>
         </div>
 
@@ -386,6 +386,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/vue-sonner/+esm"></script>
     <script src="app.js"></script>
 
 </body>
