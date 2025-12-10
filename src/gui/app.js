@@ -80,9 +80,9 @@ createApp({
 
         function getSearchFields() {
             const fields = {
-                clients: ['Name', 'Phone Number', 'City', 'Country', 'State'],
-                airlines: ['Company Name'],
-                flights: ['Start City', 'End City']
+                client: ['Name', 'Phone Number', 'City', 'Country', 'State'],
+                airline: ['Company Name'],
+                flight: ['Start City', 'End City']
             };
             return fields[searchForm.type] || [];
         }
@@ -328,9 +328,9 @@ createApp({
                     ]);
 
                     results = [
-                        ...clientsRes.map(r => ({ ...r, Type: 'client' })),
-                        ...airlinesRes.map(r => ({ ...r, Type: 'airline' })),
-                        ...flightsRes.map(r => ({ ...r, Type: 'flight' }))
+                        ...clientsRes.results.map(r => ({ ...r, Type: 'client' })),
+                        ...airlinesRes.results.map(r => ({ ...r, Type: 'airline' })),
+                        ...flightsRes.results.map(r => ({ ...r, Type: 'flight' }))
                     ];
                 } else {
                     // Search specific type
